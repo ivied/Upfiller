@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/upfiller.iml" filepath="$PROJECT_DIR$/.idea/modules/upfiller.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/upfiller.iml" filepath="$PROJECT_DIR$/.idea/modules/upfiller.iml" group="upfiller" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/upfiller_main.iml" filepath="$PROJECT_DIR$/.idea/modules/upfiller_main.iml" group="upfiller" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/upfiller_test.iml" filepath="$PROJECT_DIR$/.idea/modules/upfiller_test.iml" group="upfiller" />
     </modules>
