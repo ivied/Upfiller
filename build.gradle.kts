@@ -35,6 +35,7 @@ dependencies {
     compile(kotlinModule("stdlib-jdk8", kotlin_version))
     compile("com.itextpdf:itextpdf:5.5.13.1" )
 
+    compile ("pl.allegro.finance:tradukisto:1.8.0")
     testCompile("junit", "junit", "4.12")
 }
 
