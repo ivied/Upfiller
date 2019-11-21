@@ -1,16 +1,19 @@
 package view
 
+import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.scene.layout.Priority
+import javafx.stage.StageStyle
 import parsePDF
 import tornadofx.*
 import java.io.File
+import kotlin.concurrent.thread
 
 private const val FILE_NAME = "xsat"
 
 private const val FILE_NAME_VAJUTO = "vajuto"
-class MainView : View("My View") {
+class MainView : View("Invoice Generator") {
 
     val currencies = FXCollections.observableArrayList("$", "€")
     var templates = FXCollections.observableArrayList<String>()
@@ -65,8 +68,10 @@ class MainView : View("My View") {
             }
             button("Generate") {
                 action {
+                    find<ProgressView>().openModal(stageStyle = StageStyle.UTILITY)
+
                     parsePDF(selectedTemplate.get(), selectedCurrency.get())
-                    
+
                 }
 
             }
@@ -75,5 +80,19 @@ class MainView : View("My View") {
     }
 
 
+}
+
+class ProgressView: View(){
+
+    override val root = progressindicator {
+        thread {
+            prefHeight = 100.00
+            prefWidth = 100.00
+            for (i in 1..100) {
+                Platform.runLater { progress = i.toDouble() / 100.0 }
+                Thread.sleep(30)
+            }
+        }
+    }
 }
 
