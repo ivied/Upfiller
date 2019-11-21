@@ -13,7 +13,7 @@ private const val FILE_NAME_VAJUTO = "vajuto"
 class MainView : View("My View") {
 
     val currencies = FXCollections.observableArrayList("$", "€")
-    var templates = FXCollections.observableArrayList(FILE_NAME, FILE_NAME_VAJUTO)
+    var templates = FXCollections.observableArrayList<String>()
 
     override val root = form {
         vbox {

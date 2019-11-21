@@ -2,9 +2,9 @@ import com.itextpdf.text.pdf.AcroFields
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.PdfStamper
 import pl.allegro.finance.tradukisto.ValueConverters
-import view.MainView
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.lang.StringBuilder
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,7 +35,7 @@ private val dateTo = LocalDate.parse("2019-11-15")
 val dateFormatterTableEN = DateTimeFormatter.ofPattern("YY.MM.dd")
 
 
-private val hours = 25
+private val hours = 70
 private val price = 50
 
 
@@ -46,14 +46,16 @@ private val price = 50
 
 fun parsePDF(filename : String, currency: String) {
 
-    val FILE_NAME_RESULT = TEMPLATE_DIR + filename + dateFormatterTableEN.format(dateFrom) + "-" + dateFormatterTableEN.format(dateTo) + EXTENSION
-    val FILE_NAME_TEMPLATE = TEMPLATE_DIR + filename + EXTENSION
+    val fileNameResult = StringBuilder().append(filename.substringBeforeLast('.', "" ))
+        .append(dateFormatterTableEN.format(dateFrom) + "-" + dateFormatterTableEN.format(dateTo))
+        .append("." + filename.substringAfterLast('.', "")).toString()
+
 
     println("Hello World")
     val moneyFormat = DecimalFormat("#.00")
 
-    val reader = PdfReader(FILE_NAME_TEMPLATE)
-    val stamper = PdfStamper(reader, FileOutputStream(FILE_NAME_RESULT) as OutputStream?)
+    val reader = PdfReader(filename)
+    val stamper = PdfStamper(reader, FileOutputStream(fileNameResult) as OutputStream?)
     val form = stamper.acroFields
     form.removeXfa()
     setDateAndNumber(form)
