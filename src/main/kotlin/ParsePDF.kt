@@ -2,7 +2,6 @@ import com.itextpdf.text.pdf.AcroFields
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.PdfStamper
 import pl.allegro.finance.tradukisto.ValueConverters
-import view.MainView
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.text.DecimalFormat
@@ -25,71 +24,76 @@ private const val FIELD_TO_RUS = "toRus"
 private const val FIELD_TOTAL_SUB_WORDS_EN = "totalSumWordsEn"
 private const val FIELD_TOTAL_SUB_WORDS_RUS = "totalSumWordsRus"
 private const val TEMPLATE_DIR = "templates\\"
-private const val FILE_NAME = "xsat"
-
-private const val FILE_NAME_VAJUTO = "vajuto"
 private const val EXTENSION = ".pdf"
-private val dateFrom = LocalDate.parse("2019-11-01")
-private val dateTo = LocalDate.parse("2019-11-15")
 
 val dateFormatterTableEN = DateTimeFormatter.ofPattern("YY.MM.dd")
 
 
-private val hours = 25
-private val price = 50
+private val hours = 150
+private val price = 30
 
 
 
 
 
+class ParsePDF {
+
+    public fun parsePDF(
+        filename: String,
+        currency: String,
+        dateFrom: LocalDate,
+        dateTo: LocalDate
+    ) {
+
+        val FILE_NAME_RESULT =
+            TEMPLATE_DIR + filename + dateFormatterTableEN.format(dateFrom) + "-" + dateFormatterTableEN.format(dateTo) + EXTENSION
+        val FILE_NAME_TEMPLATE = TEMPLATE_DIR + filename + EXTENSION
+
+        val moneyFormat = DecimalFormat("#.00")
+        val reader = PdfReader(FILE_NAME_TEMPLATE)
+        val stamper = PdfStamper(reader, FileOutputStream(FILE_NAME_RESULT) as OutputStream?)
+        val form = stamper.acroFields
+        form.removeXfa()
+        setDateAndNumber(form, dateFrom, dateTo)
+        form.setField(FIELD_HOURS_AMOUNT, hours.toString())
+        form.setField(FIELD_PRICE, currency + moneyFormat.format(price))
+        val total = price * hours
+        form.setField(FIELD_TOTAL, currency + moneyFormat.format(total))
+        form.setField(FIELD_GRAND_TOTAL, currency + moneyFormat.format(total))
 
 
-fun parsePDF(filename : String, currency: String) {
+        form.setField(FIELD_TOTAL_SUB_WORDS_RUS, ValueConverters.RUSSIAN_INTEGER.asWords(total).capitalize() + " евро")
 
-    val FILE_NAME_RESULT = TEMPLATE_DIR + filename + dateFormatterTableEN.format(dateFrom) + "-" + dateFormatterTableEN.format(dateTo) + EXTENSION
-    val FILE_NAME_TEMPLATE = TEMPLATE_DIR + filename + EXTENSION
+        form.setField(FIELD_TOTAL_SUB_WORDS_EN, ValueConverters.ENGLISH_INTEGER.asWords(total).capitalize() + " euro")
 
-    println("Hello World")
-    val moneyFormat = DecimalFormat("#.00")
+        stamper.setFormFlattening(true)
+        stamper.close()
+        reader.close()
 
-    val reader = PdfReader(FILE_NAME_TEMPLATE)
-    val stamper = PdfStamper(reader, FileOutputStream(FILE_NAME_RESULT) as OutputStream?)
-    val form = stamper.acroFields
-    form.removeXfa()
-    setDateAndNumber(form)
-    form.setField(FIELD_HOURS_AMOUNT, hours.toString())
-    form.setField(FIELD_PRICE, currency + moneyFormat.format(price))
-    val total = price * hours
-    form.setField(FIELD_TOTAL, currency +  moneyFormat.format(total))
-    form.setField(FIELD_GRAND_TOTAL, currency +  moneyFormat.format(total))
+        println("Done")
+    }
 
+    private fun setDateAndNumber(
+        acroForm: AcroFields,
+        dateFrom: LocalDate,
+        dateTo: LocalDate
+    ) {
+        var current = LocalDateTime.now()
+        current = current.minusDays(10)
+        val numberFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+        val formatted = current.format(numberFormatter)
+        acroForm.setField(FIELD_NUMBER, formatted)
+        val dateFormatterRu = DateTimeFormatter.ofPattern("dd MMMM", Locale("ru"))
+        val dateFormatterEN = DateTimeFormatter.ofPattern("MMMM YYYY", Locale.US)
 
-    form.setField(FIELD_TOTAL_SUB_WORDS_RUS, ValueConverters.RUSSIAN_INTEGER.asWords(total).capitalize() + " евро")
+        acroForm.setField(FIELD_DATE, current.format(dateFormatterRu) + " / " + current.format(dateFormatterEN))
 
-    form.setField(FIELD_TOTAL_SUB_WORDS_EN, ValueConverters.ENGLISH_INTEGER.asWords(total).capitalize() + " euro")
+        val dateFormatterTableRu = DateTimeFormatter.ofPattern("dd MMMM YYYY", Locale("ru"))
+        val dateFormatterTableEN = DateTimeFormatter.ofPattern("dd MMMM YYYY", Locale.US)
 
-    stamper.setFormFlattening(true)
-    stamper.close()
-    reader.close()
-
-    println("Done")
-}
-
-private fun setDateAndNumber(acroForm: AcroFields) {
-    val current = LocalDateTime.now()
-    val numberFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-    val formatted = current.format(numberFormatter)
-    acroForm.setField(FIELD_NUMBER, formatted)
-    val dateFormatterRu = DateTimeFormatter.ofPattern("dd MMMM", Locale("ru"))
-    val dateFormatterEN = DateTimeFormatter.ofPattern("MMMM YYYY", Locale.US)
-
-    acroForm.setField(FIELD_DATE, current.format(dateFormatterRu) + " / " + current.format(dateFormatterEN))
-
-    val dateFormatterTableRu = DateTimeFormatter.ofPattern("dd MMMM YYYY", Locale("ru"))
-    val dateFormatterTableEN = DateTimeFormatter.ofPattern("dd MMMM YYYY", Locale.US)
-
-    acroForm.setField(FIELD_FROM_ENG, dateFormatterTableEN.format(dateFrom))
-    acroForm.setField(FIELD_TO_ENG, dateFormatterTableEN.format(dateTo))
-    acroForm.setField(FIELD_FROM_RUS, dateFormatterTableRu.format(dateFrom))
-    acroForm.setField(FIELD_TO_RUS, dateFormatterTableRu.format(dateTo))
+        acroForm.setField(FIELD_FROM_ENG, dateFormatterTableEN.format(dateFrom))
+        acroForm.setField(FIELD_TO_ENG, dateFormatterTableEN.format(dateTo))
+        acroForm.setField(FIELD_FROM_RUS, dateFormatterTableRu.format(dateFrom))
+        acroForm.setField(FIELD_TO_RUS, dateFormatterTableRu.format(dateTo))
+    }
 }
