@@ -4,6 +4,7 @@ import com.itextpdf.text.pdf.PdfStamper
 import pl.allegro.finance.tradukisto.ValueConverters
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.lang.StringBuilder
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,35 +24,28 @@ private const val FIELD_FROM_RUS = "fromRus"
 private const val FIELD_TO_RUS = "toRus"
 private const val FIELD_TOTAL_SUB_WORDS_EN = "totalSumWordsEn"
 private const val FIELD_TOTAL_SUB_WORDS_RUS = "totalSumWordsRus"
-private const val TEMPLATE_DIR = "templates\\"
-private const val EXTENSION = ".pdf"
 
 val dateFormatterTableEN = DateTimeFormatter.ofPattern("YY.MM.dd")
 
 
-private val hours = 150
-private val price = 30
+private val hours = 25
+private val price = 50
+
 
 
 
 
 
 class ParsePDF {
+fun parsePDF(filename: String, currency: String, dateFrom: LocalDate, dateTo: LocalDate) {
 
-    public fun parsePDF(
-        filename: String,
-        currency: String,
-        dateFrom: LocalDate,
-        dateTo: LocalDate
-    ) {
+    val fileNameResult = StringBuilder().append(filename.substringBeforeLast('.', "" ))
+        .append(dateFormatterTableEN.format(dateFrom) + "-" + dateFormatterTableEN.format(dateTo))
+        .append("." + filename.substringAfterLast('.', "")).toString()
 
-        val FILE_NAME_RESULT =
-            TEMPLATE_DIR + filename + dateFormatterTableEN.format(dateFrom) + "-" + dateFormatterTableEN.format(dateTo) + EXTENSION
-        val FILE_NAME_TEMPLATE = TEMPLATE_DIR + filename + EXTENSION
-
-        val moneyFormat = DecimalFormat("#.00")
-        val reader = PdfReader(FILE_NAME_TEMPLATE)
-        val stamper = PdfStamper(reader, FileOutputStream(FILE_NAME_RESULT) as OutputStream?)
+    val moneyFormat = DecimalFormat("#.00")
+        val reader = PdfReader(filename)
+        val stamper = PdfStamper(reader, FileOutputStream(fileNameResult) as OutputStream?)
         val form = stamper.acroFields
         form.removeXfa()
         setDateAndNumber(form, dateFrom, dateTo)
@@ -79,7 +73,7 @@ class ParsePDF {
         dateTo: LocalDate
     ) {
         var current = LocalDateTime.now()
-        current = current.minusDays(10)
+        //current = current.minusDays(10)
         val numberFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
         val formatted = current.format(numberFormatter)
         acroForm.setField(FIELD_NUMBER, formatted)
@@ -97,3 +91,4 @@ class ParsePDF {
         acroForm.setField(FIELD_TO_RUS, dateFormatterTableRu.format(dateTo))
     }
 }
+

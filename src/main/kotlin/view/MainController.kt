@@ -8,12 +8,10 @@ import java.io.File
 import java.time.LocalDate
 import ParsePDF
 
-private const val FILE_NAME = "xsat"
-private const val FILE_NAME_VAJUTO = "vajuto"
 
 
 class MainController: Controller() {
-     var templates = FXCollections.observableArrayList(FILE_NAME, FILE_NAME_VAJUTO)
+     var templates = FXCollections.observableArrayList("")
      val currencies = FXCollections.observableArrayList("$", "€")
      val selectedTemplate = SimpleStringProperty()
      val selectedCurrency = SimpleStringProperty()
@@ -25,7 +23,6 @@ class MainController: Controller() {
         dir?.walk()?.forEach {
             templates.add(it.path)
         }
-
     }
 
     fun parsePDF() {
