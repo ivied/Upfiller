@@ -4,6 +4,8 @@ import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import javafx.stage.StageStyle
 
 import tornadofx.*
@@ -19,9 +21,7 @@ class MainView : View("My View") {
     override val root = form {
         vbox {
 
-            val selectedCurrency = SimpleStringProperty()
             hbox {
-
 
                 button("Add Template Directory") {
                     action {
@@ -29,7 +29,6 @@ class MainView : View("My View") {
                         controller.addFolder(dir)
                     }
                 }
-
 
                 button ("", imageview( File("settings-512.png").toURI().toString()){
                     fitHeight = 20.00
@@ -39,28 +38,54 @@ class MainView : View("My View") {
 
                 spacing = 10.00
             }
+            datepicker(controller.sendDate) {
+                promptText = "Invoice Send Date"
+            }
             datepicker(controller.startDate) {
-                value = LocalDate.now()
+                promptText = "Contract Start Date"
             }
             datepicker(controller.endDate) {
-                value = LocalDate.now()
+                promptText = "Contract End Date"
             }
-            combobox(controller.selectedCurrency, controller.currencies){
-                prefWidth = 100.00
+            hbox {
+                textfield(controller.amountOfHours) {
+                    prefWidth = 50.00
+                    promptText = "Hours"
+                    filterInput { it.controlNewText.isDouble() }
+                }
+                textfield(controller.rate) {
+                    promptText = "Rate"
+                    prefWidth = 50.00
+                    filterInput { it.controlNewText.isDouble() }
+                }
+                combobox(controller.selectedCurrency, controller.currencies) {
+                    prefWidth = 50.00
+
+                }
+                spacing = 10.00
             }
             combobox(controller.selectedTemplate, controller.templates){
-                prefWidth = 100.00
+                promptText = "Template"
+                useMaxWidth = true
             }
             button("Generate") {
                 action {
                     controller.parsePDF()
-                    
-                    find<ProgressView>().openModal(stageStyle = StageStyle.UTILITY)
 
-
+                    //find<ProgressView>().openModal(stageStyle = StageStyle.UTILITY)
                 }
-
+                style {
+                    fontWeight = FontWeight.EXTRA_BOLD
+                    useMaxWidth = true
+                    borderColor += box(
+                        top = Color.RED,
+                        right = Color.DARKGREEN,
+                        left = Color.ORANGE,
+                        bottom = Color.PURPLE
+                    )
+                }
             }
+            prefHeight = 300.0
             spacing = 20.00
 
         }
