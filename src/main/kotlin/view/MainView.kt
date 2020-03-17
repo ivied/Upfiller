@@ -38,14 +38,30 @@ class MainView : View("My View") {
 
                 spacing = 10.00
             }
-            datepicker(controller.sendDate) {
-                promptText = "Invoice Send Date"
+
+
+            vbox {
+                text("Invoice Send Date:")
+                datepicker(controller.sendDate) {
+                    promptText = "Invoice Send Date"
+
+                }
             }
-            datepicker(controller.startDate) {
-                promptText = "Contract Start Date"
+
+            vbox {
+                text("Contract Start Date:")
+                datepicker(controller.startDate) {
+                    promptText = "Contract Start Date"
+
+                }
             }
-            datepicker(controller.endDate) {
-                promptText = "Contract End Date"
+
+            vbox {
+                text("Contract End Date:")
+                datepicker(controller.endDate) {
+                    promptText = "Contract End Date"
+
+                }
             }
             hbox {
                 textfield(controller.amountOfHours) {
@@ -85,9 +101,9 @@ class MainView : View("My View") {
                     )
                 }
             }
-            prefHeight = 300.0
-            spacing = 20.00
+            prefHeight = 350.0
 
+            spacing = 20.00
         }
     }
 
